@@ -26,7 +26,7 @@
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>applicationinsights-web</artifactId>
-                <!-- or applicationinsights-core for bare API -->
+                <!-- or    applicationinsights-core for bare API -->
                 <version>[1.0,)</version>
             </dependency>
         <dependency>

@@ -143,7 +143,7 @@ public class IntermediateHistoryStore extends AbstractService
     /**
    * Initialize the service.
    *
-   * The function transition MUST be from {@link STATE#NOTINITED} to {@link STATE#INITED}
+   * The transition MUST be from {@link STATE#NOTINITED} to {@link STATE#INITED}
    * unless the operation failed and an exception was raised, in which case
    * {@link #stop()} MUST be invoked and the service enter the state
    * {@link STATE#STOPPED}.
