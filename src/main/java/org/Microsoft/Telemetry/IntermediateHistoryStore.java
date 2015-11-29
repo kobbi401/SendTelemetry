@@ -21,6 +21,7 @@
 
 
  
+ 
 package org.Microsoft.Telemetry;
 
 import com.microsoft.applicationinsights.TelemetryClient;
