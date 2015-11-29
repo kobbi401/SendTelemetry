@@ -1,26 +1,23 @@
 /*
-* ApplicationInsights-Java
-* Copyright (c) Microsoft Corporation
-* All rights reserved.
-*
-* MIT License
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this
-* software and associated documentation files (the ""Software""), to deal in the Software
-* without restriction, including without limitation the rights to use, copy, modify, merge,
-* publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-* persons to whom the Software is furnished to do so, subject to the following conditions:
-* The above copyright notice and this permission notice shall be included in all copies or
-* substantial portions of the Software.
-* THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-* DEALINGS IN THE SOFTWARE.
-*/
-
-
- 
+ * ApplicationInsights-Java
+ * Copyright (c) Microsoft Corporation
+ * All rights reserved.
+ *
+ * MIT License
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the ""Software""), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
 package org.Microsoft.Telemetry;
 
 import com.microsoft.applicationinsights.TelemetryClient;
@@ -81,7 +78,6 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.server.timeline.TimelineDataManager;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 
-
 /**
  * this Class to send History intermediate of Job to Application Insights , Add
  * also preserved in history in class of History storage of Yarn Timeline server
@@ -96,59 +92,58 @@ public class IntermediateHistoryStore extends AbstractService
     private String Ikey = "";
     private String job_id = "";
     private String IKEY_NAME_PROPERTY_CONFIG = "microsoft.telemetry.IKey";
-    private String PREFIX_CUSTOM_DIMENSINS = "microsoft.telemetry.custom.parameter.";   
-    private String PATTERN_LOG_INFO=" [ Telemetry LI ] ";
-    private String PATTERN_LOG_ERROR=" [ Telemetry LE ] ";
-    
+    private String PREFIX_CUSTOM_DIMENSINS = "microsoft.telemetry.custom.parameter.";
+    private String PATTERN_LOG_INFO = " [ Telemetry LI ] ";
+    private String PATTERN_LOG_ERROR = " [ Telemetry LE ] ";
+
     private TelemetryClient telemetry = null;
     private TelemetryConfiguration telemetryconfig = null;
     private TimelineStore originalStorage = null;
     private YarnClient client = null;
     private Configuration config = new YarnConfiguration();
     private ApplicationReport applicationReport = null;
-    
-    
+
     private Map<String, Long> times = new HashMap<String, Long>();
-    private Map<String, String> dimension_to_sending = new HashMap<String, String>();  
+    private Map<String, String> dimension_to_sending = new HashMap<String, String>();
     private Map<String, String> dimension_from_config = new HashMap<String, String>();
 
     //Constructor overload
-    public IntermediateHistoryStore(String name) throws YarnException,IOException  {
+    public IntermediateHistoryStore(String name) throws YarnException, IOException {
         super(IntermediateHistoryStore.class.getName());
 
         try {
             initialization(config);
         } catch (IOException ex) {
             Logger.getLogger(IntermediateHistoryStore.class.getName()).log(Level.SEVERE, null, ex);
-        }catch (YarnException ye) {
+        } catch (YarnException ye) {
             Logger.getLogger(IntermediateHistoryStore.class.getName()).log(Level.SEVERE, null, ye);
         }
-       
+
     }
 
     //Default constructor
     public IntermediateHistoryStore() throws YarnException, IOException {
         super(IntermediateHistoryStore.class.getName());
 
-         try {
+        try {
             initialization(config);
         } catch (IOException ex) {
             Logger.getLogger(IntermediateHistoryStore.class.getName()).log(Level.SEVERE, null, ex);
-        }catch (YarnException ye) {
+        } catch (YarnException ye) {
             Logger.getLogger(IntermediateHistoryStore.class.getName()).log(Level.SEVERE, null, ye);
         }
-      }
+    }
 
-    
     /**
-   * Initialize the service.
-   *
-   * The transition MUST be from {@link STATE#NOTINITED} to {@link STATE#INITED}
-   * unless the operation failed and an exception was raised, in which case
-   * {@link #stop()} MUST be invoked and the service enter the state
-   * {@link STATE#STOPPED}.
-   * @param conf the configuration of the service
-   */
+     * Initialize the service.
+     *
+     * The transition MUST be from {@link STATE#NOTINITED} to
+     * {@link STATE#INITED} unless the operation failed and an exception was
+     * raised, in which case {@link #stop()} MUST be invoked and the service
+     * enter the state {@link STATE#STOPPED}.
+     *
+     * @param conf the configuration of the service
+     */
     @Override
     public void init(Configuration conf) {
         this.config = conf;
@@ -156,22 +151,23 @@ public class IntermediateHistoryStore extends AbstractService
         if (originalStorage != null) {
             this.originalStorage.init(conf);
         } else {
-            LOG.info(PATTERN_LOG_INFO+"origina Storage  not initialized");
+            LOG.info(PATTERN_LOG_INFO + "origina Storage  not initialized");
         }
 
         if (client != null) {
             this.client.init(conf);
         } else {
-            LOG.info(PATTERN_LOG_INFO+" Yarn Client not initialized");
+            LOG.info(PATTERN_LOG_INFO + " Yarn Client not initialized");
         }
 
     }
 
     /**
-   * This method Initializes all objects of the Telemetry service.
-   * @throws IOException ,YarnException
-   */
-    private void initialization(Configuration conf) throws YarnException, IOException  {
+     * This method Initializes all objects of the Telemetry service.
+     *
+     * @throws IOException ,YarnException
+     */
+    private void initialization(Configuration conf) throws YarnException, IOException {
 
         originalStorage = ReflectionUtils.newInstance(conf.getClass(
                 YarnConfiguration.TIMELINE_SERVICE_STORE + "-old", LeveldbTimelineStore.class,
@@ -183,36 +179,37 @@ public class IntermediateHistoryStore extends AbstractService
 
         Ikey = conf.get(IKEY_NAME_PROPERTY_CONFIG);
 
-        dimension_from_config = conf.getValByRegex(PREFIX_CUSTOM_DIMENSINS+"*");
+        dimension_from_config = conf.getValByRegex(PREFIX_CUSTOM_DIMENSINS + "*");
 
-        LOG.info(PATTERN_LOG_INFO+String.format("Updating %d dimensions from Configuration file ", dimension_from_config.size()));
+        LOG.info(PATTERN_LOG_INFO + String.format("Updating %d dimensions from Configuration file ", dimension_from_config.size()));
 
         if (!Ikey.equals("")) {
 
             telemetryconfig.setInstrumentationKey(Ikey);
             telemetry = new TelemetryClient(telemetryconfig);
-            LOG.info(PATTERN_LOG_INFO+"Instrumentation Key  initialized successfully....!");
+            LOG.info(PATTERN_LOG_INFO + "Instrumentation Key  initialized successfully....!");
 
         } else {
-            LOG.error(PATTERN_LOG_ERROR+"Instrumentation Key is not initialized Because not provided Ikey or failing to read from config file ");
+            LOG.error(PATTERN_LOG_ERROR + "Instrumentation Key is not initialized Because not provided Ikey or failing to read from config file ");
         }
 
         if (originalStorage != null) {
 
-            LOG.info(PATTERN_LOG_INFO+"Timeline server Storage initialized successfully....!");
+            LOG.info(PATTERN_LOG_INFO + "Timeline server Storage initialized successfully....!");
 
         } else {
-            LOG.error(PATTERN_LOG_ERROR+"Timeline server Storage Initialization failed");
+            LOG.error(PATTERN_LOG_ERROR + "Timeline server Storage Initialization failed");
         }
     }
 
     /**
-   * This method convert  http response to  Document.
-   * @param inputStream all response from the server
-   * @return An {@link Document} object describe all information of respond in XML.
-   * @throws Exception 
-   */
-    
+     * This method convert http response to Document.
+     *
+     * @param inputStream all response from the server
+     * @return An {@link Document} object describe all information of respond in
+     * XML.
+     * @throws Exception
+     */
     private Document convertInputStreamToDocumen(InputStream inputStream) {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -222,19 +219,20 @@ public class IntermediateHistoryStore extends AbstractService
             Document doc = builder.parse(inputStream);
             return doc;
         } catch (Exception e) {
-            LOG.error(PATTERN_LOG_ERROR+"Error at convert http response to Documant ", e);
+            LOG.error(PATTERN_LOG_ERROR + "Error at convert http response to Documant ", e);
             e.printStackTrace();
         }
         return null;
     }
 
     /**
-   * This method returns all request dimensions values as pairs .
-   * @param dimension , all dimension from Configuration file
-   * @param RootDocument , Document all Configuration file as xml 
-   * @return An {@link Map} , dimensions values as pair{ name , value } .
-   * @throws XPathExpressionException 
-   */
+     * This method returns all request dimensions values as pairs .
+     *
+     * @param dimension , all dimension from Configuration file
+     * @param RootDocument , Document all Configuration file as xml
+     * @return An {@link Map} , dimensions values as pair{ name , value } .
+     * @throws XPathExpressionException
+     */
     private Map<String, String> get_dimensions_values(Map<String, String> dimension, Document RootDocument) throws XPathExpressionException {
 
         String expression = "";
@@ -261,21 +259,22 @@ public class IntermediateHistoryStore extends AbstractService
 
             }
         } else {
-            LOG.error(PATTERN_LOG_ERROR+"Root Document is null ");
+            LOG.error(PATTERN_LOG_ERROR + "Root Document is null ");
         }
 
         return values_of_dimensions;
     }
 
-    
     /**
-   * This method send http request by MAPREDUCE RESY API to get
-   * Configuration file from ResourceManager To obtain the values of properties .
-   * @param dimension , all dimension from Configuration file
-   * @param Appid , Application id  
-   * @return An {@link Map} , dimensions values as pair{dimension_name,dimension_value}.
-   * @throws YarnException, IOException
-   */
+     * This method send http request by MAPREDUCE RESY API to get Configuration
+     * file from ResourceManager To obtain the values of properties .
+     *
+     * @param dimension , all dimension from Configuration file
+     * @param Appid , Application id
+     * @return An {@link Map} , dimensions values as
+     * pair{dimension_name,dimension_value}.
+     * @throws YarnException, IOException
+     */
     private Map<String, String> get_properties_values(Map<String, String> dimension, String Appid) throws YarnException, IOException {
 
         String TrackingUrl = "";
@@ -294,36 +293,36 @@ public class IntermediateHistoryStore extends AbstractService
                 if (app != null) {
 
                     applicationReport = client.getApplicationReport(app);
-                    LOG.info(PATTERN_LOG_INFO+"Create ApplicationId succeeded");
+                    LOG.info(PATTERN_LOG_INFO + "Create ApplicationId succeeded");
                 } else {
-                    LOG.error(PATTERN_LOG_ERROR+"Create ApplicationId Failed");
+                    LOG.error(PATTERN_LOG_ERROR + "Create ApplicationId Failed");
                 }
 
             } else {
-                LOG.error(PATTERN_LOG_ERROR+"Create Yarnclient Failed");
+                LOG.error(PATTERN_LOG_ERROR + "Create Yarnclient Failed");
             }
 
             if (applicationReport != null) {
 
-                LOG.info(PATTERN_LOG_INFO+"Create applicationReport succeeded");
+                LOG.info(PATTERN_LOG_INFO + "Create applicationReport succeeded");
                 TrackingUrl = applicationReport.getTrackingUrl();
                 ConfUrl = String.format("%sws/v1/mapreduce/jobs/%s/conf", TrackingUrl, Jobid);
 
             } else {
-                LOG.error(PATTERN_LOG_ERROR+"Create applicationReport Failed");
+                LOG.error(PATTERN_LOG_ERROR + "Create applicationReport Failed");
             }
 
             if (!ConfUrl.equals("empty")) {
 
-                LOG.info(PATTERN_LOG_INFO+"Connecting to ResourceManager at address  " + ConfUrl);
-                
+                LOG.info(PATTERN_LOG_INFO + "Connecting to ResourceManager at address  " + ConfUrl);
+
                 URL url = new URL(ConfUrl);
-                connection = (HttpURLConnection) url.openConnection();               
+                connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Accept", "application/xml");
 
                 InputStream is = null;
                 int statusCode = connection.getResponseCode();
-                LOG.info(PATTERN_LOG_INFO+String.format("statusCode :%d", statusCode));
+                LOG.info(PATTERN_LOG_INFO + String.format("statusCode :%d", statusCode));
                 if (statusCode >= 200 && statusCode < 400) {
 
                     //Get Response 
@@ -333,16 +332,15 @@ public class IntermediateHistoryStore extends AbstractService
 
                 } else {
                     is = connection.getErrorStream();
-                    LOG.error(PATTERN_LOG_ERROR+String.format("Error : http request failed  statusCode is %d", statusCode));
+                    LOG.error(PATTERN_LOG_ERROR + String.format("Error : http request failed  statusCode is %d", statusCode));
                 }
             } else {
-                LOG.error(PATTERN_LOG_ERROR+"Connects to ResourceManager failed Because http Incorrect address ......");
+                LOG.error(PATTERN_LOG_ERROR + "Connects to ResourceManager failed Because http Incorrect address ......");
             }
 
-           
         } catch (Exception e) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Error : ", e);
+            LOG.error(PATTERN_LOG_ERROR + "Error : ", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -354,7 +352,6 @@ public class IntermediateHistoryStore extends AbstractService
 
     }
 
-    
     private void WriteToFileLog(String key, String value) throws Exception {
         try {
 
@@ -362,10 +359,10 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (Exception e) {
 
-            String message = PATTERN_LOG_ERROR+" Creating a problem while writing to Log";
+            String message = PATTERN_LOG_ERROR + " Creating a problem while writing to Log";
             LOG.error(message, e);
             throw e;
-        } 
+        }
     }
 
     private String CastFromTimeToStringFormat(long Timestamp) {
@@ -377,10 +374,11 @@ public class IntermediateHistoryStore extends AbstractService
     }
 
     /**
-   * This method Check if the job he MapReduce type
-   * @param EntityType ,Entity Type as {@link String} 
-   * @return An {@link boolean} 
-   */
+     * This method Check if the job he MapReduce type
+     *
+     * @param EntityType ,Entity Type as {@link String}
+     * @return An {@link boolean}
+     */
     private boolean if_MapReducejob(String EntityType) {
 
         String[] Entity_Types = {"MAPREDUCE_JOB", "MAPREDUCE_TASK"};
@@ -400,11 +398,11 @@ public class IntermediateHistoryStore extends AbstractService
     }
 
     /**
-   * This method Check if the job he Tez type
-   * @param EntityType ,Entity Type as {@link String} 
-   * @return An {@link boolean} 
-   */
-    
+     * This method Check if the job he Tez type
+     *
+     * @param EntityType ,Entity Type as {@link String}
+     * @return An {@link boolean}
+     */
     private boolean if_Tezjob(String EntityType) {
 
         String[] Entity_Types = {"TEZ_APPLICATION",
@@ -426,24 +424,26 @@ public class IntermediateHistoryStore extends AbstractService
 
         return false;
     }
-    
+
     /**
-   * This method Getting TimelineEntity While running job and check the type is
-   * Mapreduce or Tez job And send entity to send Telemetry to Application Insights
-   * @param  entity ,Timeline Entity as type {@link TimelineEntity} 
-   */
+     * This method Getting TimelineEntity While running job and check the type
+     * is Mapreduce or Tez job And send entity to send Telemetry to Application
+     * Insights
+     *
+     * @param entity ,Timeline Entity as type {@link TimelineEntity}
+     */
     private void SendInfoToApplicationInsights(TimelineEntity entity) throws Exception {
 
         String EntityType = entity.getEntityType();
-        
+
         if (if_MapReducejob(EntityType)) {
             Send_Mapreduce_Telemetry(entity);
-            
+
         } else if (if_Tezjob(EntityType)) {
             Send_Tez_Telemetry(entity);
-            
+
         } else {
-            LOG.error(PATTERN_LOG_ERROR+String.format("Error : type of entity %s Not supported ", EntityType));
+            LOG.error(PATTERN_LOG_ERROR + String.format("Error : type of entity %s Not supported ", EntityType));
         }
 
     }
@@ -460,9 +460,11 @@ public class IntermediateHistoryStore extends AbstractService
     }
 
     /**
-   * This method Getting TimelineEntity type of Tez job And send information as Telemetry to Application Insights
-   * @param  entity ,Timeline Entity as type {@link TimelineEntity} 
-   */
+     * This method Getting TimelineEntity type of Tez job And send information
+     * as Telemetry to Application Insights
+     *
+     * @param entity ,Timeline Entity as type {@link TimelineEntity}
+     */
     private void Send_Tez_Telemetry(TimelineEntity entity) throws Exception {
 
         try {
@@ -494,11 +496,11 @@ public class IntermediateHistoryStore extends AbstractService
 
                     Event_Name = event.getEventType();
 
-                    LOG.info(PATTERN_LOG_INFO+String.format(" Event Type %s  Entity ID :%s   Entity Type : %s :", event.getEventType(), entity.getEntityId(), entity.getEntityType()));
+                    LOG.info(PATTERN_LOG_INFO + String.format(" Event Type %s  Entity ID :%s   Entity Type : %s :", event.getEventType(), entity.getEntityId(), entity.getEntityType()));
 
                 }
             } else {
-                LOG.info(PATTERN_LOG_INFO+"No information about the event ");
+                LOG.info(PATTERN_LOG_INFO + "No information about the event ");
             }
 
             if (entity.getOtherInfo().get("config") != null) {
@@ -591,7 +593,7 @@ public class IntermediateHistoryStore extends AbstractService
                             case "stats":
 
                                 if (me.getValue() instanceof LinkedHashMap) {
-                                    LOG.info(PATTERN_LOG_INFO+String.format("tha value of stats : %s", me.getValue().getClass().getName()));
+                                    LOG.info(PATTERN_LOG_INFO + String.format("tha value of stats : %s", me.getValue().getClass().getName()));
                                     // printLinkedHashMap(value);
                                     Map<Object, Object> linkedHashMap = (LinkedHashMap) me.getValue();
 
@@ -599,13 +601,13 @@ public class IntermediateHistoryStore extends AbstractService
 
                                         Object key = entrySet.getKey();
                                         Object value1 = entrySet.getValue();
-                                        LOG.info(PATTERN_LOG_INFO+ String.format(" key type %s : value type %s", (String) key, value1.getClass().getName()));
+                                        LOG.info(PATTERN_LOG_INFO + String.format(" key type %s : value type %s", (String) key, value1.getClass().getName()));
                                         if (value1 instanceof Integer) {
-                                            LOG.info(PATTERN_LOG_INFO+ String.format(" key(Integer) %s : value  %d", (String) key, (int) value1));
+                                            LOG.info(PATTERN_LOG_INFO + String.format(" key(Integer) %s : value  %d", (String) key, (int) value1));
                                         } else if (value1 instanceof Double) {
-                                            LOG.info(PATTERN_LOG_INFO+ String.format(" key(Double) %s : value  %s", (String) key, Double.toString((double) value1)));
+                                            LOG.info(PATTERN_LOG_INFO + String.format(" key(Double) %s : value  %s", (String) key, Double.toString((double) value1)));
                                         } else if (value1 instanceof Long) {
-                                            LOG.info(PATTERN_LOG_INFO+ String.format(" key(Long) %s : value  %s", (String) key, CastFromTimeToStringFormat((long) value1)));
+                                            LOG.info(PATTERN_LOG_INFO + String.format(" key(Long) %s : value  %s", (String) key, CastFromTimeToStringFormat((long) value1)));
                                         }
                                         if (value1 instanceof ArrayList) {
                                             if (!((ArrayList) value1).isEmpty()) {
@@ -614,7 +616,7 @@ public class IntermediateHistoryStore extends AbstractService
 
                                                 for (Object part : ob) {
                                                     if (part instanceof String) {
-                                                        LOG.info(PATTERN_LOG_INFO+ String.format(" tha part %d of ArrayList type : %s", i++, (String) part));
+                                                        LOG.info(PATTERN_LOG_INFO + String.format(" tha part %d of ArrayList type : %s", i++, (String) part));
                                                     }
 
                                                 }
@@ -690,7 +692,7 @@ public class IntermediateHistoryStore extends AbstractService
                                     }
                                 } else {
 
-                                    LOG.info(PATTERN_LOG_INFO+String.format("The data type %s is not supported in this version", me.getValue().getClass().getName()));
+                                    LOG.info(PATTERN_LOG_INFO + String.format("The data type %s is not supported in this version", me.getValue().getClass().getName()));
                                 }
 
                                 break;
@@ -701,7 +703,7 @@ public class IntermediateHistoryStore extends AbstractService
                     }
 
                 } else {
-                    LOG.info(PATTERN_LOG_INFO+"No information about the Other Info ");
+                    LOG.info(PATTERN_LOG_INFO + "No information about the Other Info ");
                 }
 
                 if (Event_Name.equals("DAG_STARTED") || Event_Name.equals("DAG_FINISHED") || Event_Name.equals("VERTEX_STARTED") || Event_Name.equals("VERTEX_FINISHED")
@@ -717,7 +719,7 @@ public class IntermediateHistoryStore extends AbstractService
                             for (Map.Entry<String, String> entrySet : dimension_to_sending.entrySet()) {
 
                                 properties.put(entrySet.getKey(), entrySet.getValue());
-                                LOG.info(PATTERN_LOG_INFO+String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
+                                LOG.info(PATTERN_LOG_INFO + String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
                             }
                             dimension_to_sending.clear();
 
@@ -735,9 +737,9 @@ public class IntermediateHistoryStore extends AbstractService
                             break;
                     }
 
-                    LOG.info(String.format(PATTERN_LOG_INFO+"job_id is  %s", job_id));
-                    LOG.info(String.format(PATTERN_LOG_INFO+"operation_id  is  %s", operation_id));
-                    LOG.info(String.format(PATTERN_LOG_INFO+"job_type  is  %s", job_type));
+                    LOG.info(String.format(PATTERN_LOG_INFO + "job_id is  %s", job_id));
+                    LOG.info(String.format(PATTERN_LOG_INFO + "operation_id  is  %s", operation_id));
+                    LOG.info(String.format(PATTERN_LOG_INFO + "job_type  is  %s", job_type));
 
                     properties.put("job_id", job_id);
                     properties.put("operation_id", operation_id);
@@ -746,7 +748,7 @@ public class IntermediateHistoryStore extends AbstractService
                     for (Map.Entry<String, String> entrySet : dimension_to_sending.entrySet()) {
 
                         properties.put(entrySet.getKey(), entrySet.getValue());
-                        LOG.info(PATTERN_LOG_INFO+String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
+                        LOG.info(PATTERN_LOG_INFO + String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
                     }
 
                     eventtelemetry.getMetrics().putAll(metrics);
@@ -765,16 +767,18 @@ public class IntermediateHistoryStore extends AbstractService
 
             }
         } catch (Exception e) {
-            String message = PATTERN_LOG_ERROR+"Creating a problem while send telemetry to Applocation insights......";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while send telemetry to Applocation insights......";
             LOG.error(message, e);
-           throw new Exception(message);
+            throw new Exception(message);
         }
     }
 
     /**
-   * This method Getting TimelineEntity type of Mapreduce job And send information as Telemetry to Application Insights
-   * @param  entity ,Timeline Entity as type {@link TimelineEntity} 
-   */
+     * This method Getting TimelineEntity type of Mapreduce job And send
+     * information as Telemetry to Application Insights
+     *
+     * @param entity ,Timeline Entity as type {@link TimelineEntity}
+     */
     private void Send_Mapreduce_Telemetry(TimelineEntity entity) throws Exception {
 
         try {
@@ -803,11 +807,11 @@ public class IntermediateHistoryStore extends AbstractService
 
                     Event_Name = event.getEventType();
 
-                    LOG.info(PATTERN_LOG_INFO+String.format("Event Type %s  Entity ID :%s   Entity Type : %s :", event.getEventType(), entity.getEntityId(), entity.getEntityType()));
+                    LOG.info(PATTERN_LOG_INFO + String.format("Event Type %s  Entity ID :%s   Entity Type : %s :", event.getEventType(), entity.getEntityId(), entity.getEntityType()));
 
                 }
             } else {
-                LOG.info(PATTERN_LOG_INFO+"No information about the event");
+                LOG.info(PATTERN_LOG_INFO + "No information about the event");
             }
 
             if (Event_Name.equals("JOB_FINISHED") || Event_Name.equals("JOB_SUBMITTED") || Event_Name.equals("TASK_STARTED") || Event_Name.equals("TASK_FINISHED")) {
@@ -821,7 +825,7 @@ public class IntermediateHistoryStore extends AbstractService
                     long endTime = System.currentTimeMillis();
                     long duration = (endTime - startTime);
 
-                    LOG.info(PATTERN_LOG_INFO+String.format("The duration of request http for information from server is %s (ms)", Long.toString(duration)));
+                    LOG.info(PATTERN_LOG_INFO + String.format("The duration of request http for information from server is %s (ms)", Long.toString(duration)));
 
                 }
 
@@ -894,11 +898,11 @@ public class IntermediateHistoryStore extends AbstractService
                                                 eventtelemetry.setTimestamp(new Date(end_time));
 
                                             } else {
-                                                LOG.error(PATTERN_LOG_ERROR+String.format("not founf start time of task %s in map times ", entity.getEntityId()));
+                                                LOG.error(PATTERN_LOG_ERROR + String.format("not founf start time of task %s in map times ", entity.getEntityId()));
                                                 if_send_event = false;
                                             }
                                         } else {
-                                            LOG.error(PATTERN_LOG_ERROR+String.format("not founf start time of task %s in map times the map is Empty", entity.getEntityId()));
+                                            LOG.error(PATTERN_LOG_ERROR + String.format("not founf start time of task %s in map times the map is Empty", entity.getEntityId()));
                                             if_send_event = false;
                                         }
                                     }
@@ -970,7 +974,7 @@ public class IntermediateHistoryStore extends AbstractService
 
                                     } else {
 
-                                        LOG.info(PATTERN_LOG_INFO+String.format("The data type %s is not supported in this version", me.getValue().getClass().getName()));
+                                        LOG.info(PATTERN_LOG_INFO + String.format("The data type %s is not supported in this version", me.getValue().getClass().getName()));
                                     }
                                     break;
 
@@ -981,7 +985,7 @@ public class IntermediateHistoryStore extends AbstractService
                     }
 
                 } else {
-                    LOG.info(PATTERN_LOG_INFO+"No information about event ");
+                    LOG.info(PATTERN_LOG_INFO + "No information about event ");
                 }
 
                 if (Event_Name.equals("JOB_FINISHED") || Event_Name.equals("JOB_SUBMITTED") || Event_Name.equals("TASK_STARTED") || Event_Name.equals("TASK_FINISHED")) {
@@ -996,7 +1000,7 @@ public class IntermediateHistoryStore extends AbstractService
                             for (Map.Entry<String, String> entrySet : dimension_to_sending.entrySet()) {
 
                                 properties.put(entrySet.getKey(), entrySet.getValue());
-                                LOG.info(PATTERN_LOG_INFO+String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
+                                LOG.info(PATTERN_LOG_INFO + String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
 
                             }
                             dimension_to_sending.clear();
@@ -1011,9 +1015,9 @@ public class IntermediateHistoryStore extends AbstractService
                             break;
                     }
 
-                    LOG.info(PATTERN_LOG_INFO+String.format("job_id is  %s", job_id));
-                    LOG.info(PATTERN_LOG_INFO+String.format("operation_id is  %s", operation_id));
-                    LOG.info(PATTERN_LOG_INFO+String.format("job_type is  %s", job_type));
+                    LOG.info(PATTERN_LOG_INFO + String.format("job_id is  %s", job_id));
+                    LOG.info(PATTERN_LOG_INFO + String.format("operation_id is  %s", operation_id));
+                    LOG.info(PATTERN_LOG_INFO + String.format("job_type is  %s", job_type));
 
                     properties.put("job_id", job_id);
                     properties.put("operation_id", operation_id);
@@ -1022,7 +1026,7 @@ public class IntermediateHistoryStore extends AbstractService
                     for (Map.Entry<String, String> entrySet : dimension_to_sending.entrySet()) {
 
                         properties.put(entrySet.getKey(), entrySet.getValue());
-                        LOG.info(PATTERN_LOG_INFO+String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
+                        LOG.info(PATTERN_LOG_INFO + String.format("%s is  %s", entrySet.getKey(), entrySet.getValue()));
                     }
 
                     eventtelemetry.getMetrics().putAll(metrics);
@@ -1045,7 +1049,7 @@ public class IntermediateHistoryStore extends AbstractService
 
             }
         } catch (Exception e) {
-            String message = PATTERN_LOG_ERROR+"Creating a problem while send telemetry to Applocation insights......";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while send telemetry to Applocation insights......";
             LOG.error(message, e);
             throw new Exception(message);
         }
@@ -1070,44 +1074,44 @@ public class IntermediateHistoryStore extends AbstractService
                     for (Object part1 : ob1) {
                         if (part1 instanceof String) {
 
-                            LOG.info(PATTERN_LOG_INFO+String.format(" the part %d of ArrayList type : %s", i++, (String) part1));
+                            LOG.info(PATTERN_LOG_INFO + String.format(" the part %d of ArrayList type : %s", i++, (String) part1));
 
                         } else if (part1 instanceof LinkedHashMap) {
                             printLinkedHashMap(part1);
 
                         } else {
-                            LOG.info(PATTERN_LOG_INFO+ String.format(" the part %d of ArrayList type : %s", i++, part1.getClass().getName()));
+                            LOG.info(PATTERN_LOG_INFO + String.format(" the part %d of ArrayList type : %s", i++, part1.getClass().getName()));
                         }
 
                     }
                 }
-                LOG.info(PATTERN_LOG_INFO+ String.format(" key(string)  %s : value(ArrayList)   %d", (String) key, i));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(string)  %s : value(ArrayList)   %d", (String) key, i));
 
             } else if ((key instanceof String) && (value1 instanceof String)) {
 
-                LOG.info(PATTERN_LOG_INFO+String.format(" key(string)  %s : value(string)  %s", (String) key, (String) value1));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(string)  %s : value(string)  %s", (String) key, (String) value1));
 
             } else if ((key instanceof String) && (value1 instanceof Integer)) {
 
-                LOG.info(PATTERN_LOG_INFO+String.format(" key(String)  %s : value(Integer)  %d", (String) key, (int) value1));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(String)  %s : value(Integer)  %d", (String) key, (int) value1));
 
             } else if ((key instanceof String) && (value1 instanceof LinkedHashMap)) {
 
-                LOG.info(PATTERN_LOG_INFO+String.format(" key(string)  %s : value type  %s", (String) key, value1.getClass().getName()));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(string)  %s : value type  %s", (String) key, value1.getClass().getName()));
 
                 printLinkedHashMap(value1);
 
             } else if ((key instanceof String) && (value1 instanceof Long)) {
 
-                LOG.info(PATTERN_LOG_INFO+ String.format(" key(String)  %s : value(Long)  %s", (String) key, CastFromTimeToStringFormat((long) value1)));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(String)  %s : value(Long)  %s", (String) key, CastFromTimeToStringFormat((long) value1)));
 
             } else if ((key instanceof String) && (value1 instanceof Double)) {
 
-                LOG.info(PATTERN_LOG_INFO+ String.format(" key(String)  %s : value(double)  %s", (String) key, Double.toString((double) value1)));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key(String)  %s : value(double)  %s", (String) key, Double.toString((double) value1)));
 
             } else {
 
-                LOG.info(PATTERN_LOG_INFO+ String.format(" key type %s : value type %s", key.getClass().getName(), value1.getClass().getName()));
+                LOG.info(PATTERN_LOG_INFO + String.format(" key type %s : value type %s", key.getClass().getName(), value1.getClass().getName()));
             }
         }
     }
@@ -1116,33 +1120,33 @@ public class IntermediateHistoryStore extends AbstractService
         try {
 
             if (!str.equals("")) {
-                LOG.info(PATTERN_LOG_INFO+ str);
+                LOG.info(PATTERN_LOG_INFO + str);
             }
 
             if (value instanceof String) {
-                LOG.info(PATTERN_LOG_INFO+ (String) value);
+                LOG.info(PATTERN_LOG_INFO + (String) value);
             } else if (value instanceof Long) {
 
-                LOG.info(PATTERN_LOG_INFO+ CastFromTimeToStringFormat((long) value));
-                
+                LOG.info(PATTERN_LOG_INFO + CastFromTimeToStringFormat((long) value));
+
             } else if (value instanceof Integer) {
-                LOG.info(PATTERN_LOG_INFO+ String.format("%d", (int) value));
+                LOG.info(PATTERN_LOG_INFO + String.format("%d", (int) value));
             } else if (value instanceof Boolean) {
-                LOG.info(PATTERN_LOG_INFO+ Boolean.toString((boolean) value));
+                LOG.info(PATTERN_LOG_INFO + Boolean.toString((boolean) value));
             } else if (value instanceof Double) {
-                LOG.info(PATTERN_LOG_INFO+ Double.toString((double) value));
+                LOG.info(PATTERN_LOG_INFO + Double.toString((double) value));
             } else if (value instanceof Float) {
-                LOG.info(PATTERN_LOG_INFO+ String.format("%f", (float) value));
+                LOG.info(PATTERN_LOG_INFO + String.format("%f", (float) value));
             } else if (value instanceof Short) {
-                LOG.info(PATTERN_LOG_INFO+ Short.toString((short) value));
+                LOG.info(PATTERN_LOG_INFO + Short.toString((short) value));
             } else if (value instanceof ArrayList) {
-                LOG.info(PATTERN_LOG_INFO+String.format("tha value type : %s", value.getClass().getName()));
+                LOG.info(PATTERN_LOG_INFO + String.format("tha value type : %s", value.getClass().getName()));
                 if (!((ArrayList) value).isEmpty()) {
                     int i = 1;
                     Object[] ob = ((ArrayList) value).toArray();
 
                     for (Object part : ob) {
-                        LOG.info(PATTERN_LOG_INFO+ String.format(" tha part %d of ArrayList type : %s", i++, part.getClass().getName()));
+                        LOG.info(PATTERN_LOG_INFO + String.format(" tha part %d of ArrayList type : %s", i++, part.getClass().getName()));
 
                         if (part instanceof LinkedHashMap) {
                             //WriteObjectToLog("", part); 
@@ -1152,24 +1156,24 @@ public class IntermediateHistoryStore extends AbstractService
 
                 }
             } else if (value instanceof LinkedHashMap) {
-                LOG.info(String.format(PATTERN_LOG_INFO+"tha value type : %s", value.getClass().getName()));
+                LOG.info(String.format(PATTERN_LOG_INFO + "tha value type : %s", value.getClass().getName()));
                 printLinkedHashMap(value);
 
             } else if (value instanceof HashSet) {
 
-                LOG.info(PATTERN_LOG_INFO+String.format("tha value type : %s", value.getClass().getName()));
+                LOG.info(PATTERN_LOG_INFO + String.format("tha value type : %s", value.getClass().getName()));
 
             } else {
-                LOG.info(PATTERN_LOG_INFO+String.format("(not case )tha object type : %s", value.getClass().getName()));
+                LOG.info(PATTERN_LOG_INFO + String.format("(not case )tha object type : %s", value.getClass().getName()));
             }
 
             if (!str.equals("")) {
-                LOG.info(PATTERN_LOG_INFO+"}");
+                LOG.info(PATTERN_LOG_INFO + "}");
             }
 
         } catch (Exception e) {
 
-            String message = PATTERN_LOG_ERROR+"Creating a problem while writing the history to Log file";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while writing the history to Log file";
             LOG.error(message, e);
             throw e;
         }
@@ -1197,7 +1201,7 @@ public class IntermediateHistoryStore extends AbstractService
             // print all events of Entity
             WriteToFileLog("\tprint all events   ", "");
 
-            LOG.info(PATTERN_LOG_INFO+" print all events of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
+            LOG.info(PATTERN_LOG_INFO + " print all events of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
 
             if (entity.getEvents() != null) {
                 List<TimelineEvent> events = entity.getEvents();
@@ -1236,12 +1240,12 @@ public class IntermediateHistoryStore extends AbstractService
                 }
                 WriteToFileLog("End List of events of  :", entity.getEntityType() + "\n\n");
             } else {
-                LOG.info(PATTERN_LOG_INFO+"variable  events of entity is null ");
+                LOG.info(PATTERN_LOG_INFO + "variable  events of entity is null ");
             }
 
             // print all Related Entities of Entity
             WriteToFileLog("\tprint all Related Entities   ", "");
-            LOG.info(PATTERN_LOG_INFO+"print all Related Entities of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
+            LOG.info(PATTERN_LOG_INFO + "print all Related Entities of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
             if (entity.getRelatedEntities() != null) {
                 //Map<String, Set<String>> RelatedEntities = entity.getRelatedEntities();
 
@@ -1280,12 +1284,12 @@ public class IntermediateHistoryStore extends AbstractService
                 WriteToFileLog("End List of Related Entities  of  :", entity.getEntityType() + "\n\n");
 
             } else {
-                LOG.info(PATTERN_LOG_INFO+"variable  Related Entities is null ");
+                LOG.info(PATTERN_LOG_INFO + "variable  Related Entities is null ");
             }
 
             // print all Primary Filters of Entity
             WriteToFileLog("\tprint all Primary Filters   ", "");
-            LOG.info(PATTERN_LOG_INFO+"print all Primary Filters of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
+            LOG.info(PATTERN_LOG_INFO + "print all Primary Filters of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
 
             if (entity.getPrimaryFilters() != null) {
                 //Map<String, Set<Object>> PrimaryFilters = entity.getRelatedEntities();
@@ -1325,12 +1329,12 @@ public class IntermediateHistoryStore extends AbstractService
                 WriteToFileLog("End List of Primary Filters  of  :", entity.getEntityType() + "\n\n");
 
             } else {
-                LOG.info(PATTERN_LOG_INFO+"variable  Primary Filters is null ");
+                LOG.info(PATTERN_LOG_INFO + "variable  Primary Filters is null ");
             }
 
             // print all Other Info of Entity
             WriteToFileLog("\tprint all Other Info   ", "");
-            LOG.info(PATTERN_LOG_INFO+"print all Other Info of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
+            LOG.info(PATTERN_LOG_INFO + "print all Other Info of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n", entity.getEntityId(), entity.getEntityType()));
 
             if (entity.getOtherInfo() != null) {
                 // Map<String,Object> OtherInfo = entity.getOtherInfo();
@@ -1354,14 +1358,14 @@ public class IntermediateHistoryStore extends AbstractService
                 }
 
             } else {
-                LOG.info(PATTERN_LOG_INFO+"variable  Other Info is null ");
+                LOG.info(PATTERN_LOG_INFO + "variable  Other Info is null ");
             }
 
-            LOG.info(PATTERN_LOG_INFO+"Finished to print all information of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n\n\n", entity.getEntityId(), entity.getEntityType()));
+            LOG.info(PATTERN_LOG_INFO + "Finished to print all information of Entity Name :" + String.format("Entity ID :%s , Entity Type : %s )\n\n\n\n", entity.getEntityId(), entity.getEntityType()));
 
         } catch (Exception e) {
 
-            String message =PATTERN_LOG_ERROR+ "Creating a problem while writing the history  file";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while writing the history  file";
             LOG.error(message, e);
 
             throw e;
@@ -1371,22 +1375,23 @@ public class IntermediateHistoryStore extends AbstractService
     }
 
     /**
-   * This method retrieves a list of entity information, {@link TimelineEntity},
-   * sorted by the starting timestamp for the entity, descending. The starting
-   * timestamp of an entity is a timestamp specified by the client. If it is not
-   * explicitly specified, it will be chosen by the store to be the earliest
-   * timestamp of the events received in the first put for the entity.
-   * 
-   * @return An {@link TimelineEntities} object.
-   * @throws IOException
-   * 
-   *  the function For version 2.7 of hadoop
-   */
+     * This method retrieves a list of entity information,
+     * {@link TimelineEntity}, sorted by the starting timestamp for the entity,
+     * descending. The starting timestamp of an entity is a timestamp specified
+     * by the client. If it is not explicitly specified, it will be chosen by
+     * the store to be the earliest timestamp of the events received in the
+     * first put for the entity.
+     *
+     * @return An {@link TimelineEntities} object.
+     * @throws IOException
+     *
+     * the function For version 2.7 of hadoop
+     */
     @Override
     public TimelineEntities getEntities(String entityType,
-      Long limit, Long windowStart, Long windowEnd, String fromId, Long fromTs,
-      NameValuePair primaryFilter, Collection<NameValuePair> secondaryFilters,
-      EnumSet<Field> fieldsToRetrieve, TimelineDataManager.CheckAcl ca) throws IOException {
+            Long limit, Long windowStart, Long windowEnd, String fromId, Long fromTs,
+            NameValuePair primaryFilter, Collection<NameValuePair> secondaryFilters,
+            EnumSet<Field> fieldsToRetrieve, TimelineDataManager.CheckAcl ca) throws IOException {
 
         TimelineEntities timelineEntities = null;
         try {
@@ -1394,7 +1399,7 @@ public class IntermediateHistoryStore extends AbstractService
                 timelineEntities = originalStorage.getEntities(entityType, limit, windowStart, windowEnd, fromId, fromTs, primaryFilter, secondaryFilters, fieldsToRetrieve, ca);
             }
         } catch (IOException iOException) {
-            LOG.error(PATTERN_LOG_ERROR+"Creating a problem to get timeline Entitys from Timeline Storage", iOException);
+            LOG.error(PATTERN_LOG_ERROR + "Creating a problem to get timeline Entitys from Timeline Storage", iOException);
         }
         return timelineEntities;
     }
@@ -1415,17 +1420,14 @@ public class IntermediateHistoryStore extends AbstractService
      }
      return timelineEntities;
      }*/
-    
-    
-    
     /**
-   * This method retrieves the entity information for a given entity.
-   * @return An {@link TimelineEntity} object.
-   * @throws IOException
-   */
+     * This method retrieves the entity information for a given entity.
+     *
+     * @return An {@link TimelineEntity} object.
+     * @throws IOException
+     */
     @Override
-    public TimelineEntity getEntity(String entityId, String entityType, EnumSet<Field>
-      fieldsToRetrieve) throws IOException {
+    public TimelineEntity getEntity(String entityId, String entityType, EnumSet<Field> fieldsToRetrieve) throws IOException {
 
         TimelineEntity timelineEntity = null;
         try {
@@ -1435,23 +1437,24 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (IOException iOException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Creating a problem to get Entity from Timeline Storage", iOException);
+            LOG.error(PATTERN_LOG_ERROR + "Creating a problem to get Entity from Timeline Storage", iOException);
         }
         return timelineEntity;
 
     }
 
     /**
-   * This method retrieves the events for a list of entities all of the same
-   * entity type. The events for each entity are sorted in order of their
-   * timestamps, descending.
-   * @return An {@link TimelineEvents} object.
-   * @throws IOException
-   */   
+     * This method retrieves the events for a list of entities all of the same
+     * entity type. The events for each entity are sorted in order of their
+     * timestamps, descending.
+     *
+     * @return An {@link TimelineEvents} object.
+     * @throws IOException
+     */
     @Override
     public TimelineEvents getEntityTimelines(String entityType,
-      SortedSet<String> entityIds, Long limit, Long windowStart,
-      Long windowEnd, Set<String> eventTypes) throws IOException {
+            SortedSet<String> entityIds, Long limit, Long windowStart,
+            Long windowEnd, Set<String> eventTypes) throws IOException {
 
         TimelineEvents timelineEvents = null;
         try {
@@ -1461,18 +1464,17 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (IOException iOException) {
 
-            LOG.error(PATTERN_LOG_ERROR+" Creating a problem to get timeline Entitys from Timeline Storage", iOException);
+            LOG.error(PATTERN_LOG_ERROR + " Creating a problem to get timeline Entitys from Timeline Storage", iOException);
         }
         return timelineEvents;
     }
 
     /**
-   * This method retrieves the domain information for a given ID.
-   * 
-   * @return a {@link TimelineDomain} object.
-   * @throws IOException
-   */
-    
+     * This method retrieves the domain information for a given ID.
+     *
+     * @return a {@link TimelineDomain} object.
+     * @throws IOException
+     */
     @Override
     public TimelineDomain getDomain(String domainId) throws IOException {
 
@@ -1484,22 +1486,20 @@ public class IntermediateHistoryStore extends AbstractService
             }
         } catch (IOException e) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Creating a problem to get Timeline Domain from Timeline Storage", e);
+            LOG.error(PATTERN_LOG_ERROR + "Creating a problem to get Timeline Domain from Timeline Storage", e);
         }
         return td;
     }
 
     /**
-   * This method retrieves all the domains that belong to a given owner.
-   * The domains are sorted according to the created time firstly and the
-   * modified time secondly in descending order.
-   * 
-   * @param owner
-   *          the domain owner
-   * @return an {@link TimelineDomains} object.
-   * @throws IOException
-   */
-    
+     * This method retrieves all the domains that belong to a given owner. The
+     * domains are sorted according to the created time firstly and the modified
+     * time secondly in descending order.
+     *
+     * @param owner the domain owner
+     * @return an {@link TimelineDomains} object.
+     * @throws IOException
+     */
     @Override
     public TimelineDomains getDomains(String owner) throws IOException {
 
@@ -1510,23 +1510,24 @@ public class IntermediateHistoryStore extends AbstractService
             }
         } catch (IOException e) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Creating a problem to get Timeline Domains from Timeline Storage", e);
+            LOG.error(PATTERN_LOG_ERROR + "Creating a problem to get Timeline Domains from Timeline Storage", e);
         }
         return tds;
     }
 
     /**
-   * This method is Main of My Project ,
-   * this IntermediateHistoryStore class extends TimelineStore of yarn and Override all function  
-   * To pass the information of each job to Timeline Storage original 
-   * And This project takes the Intermediate information and pulls out
-   * What is important and sends the information as Telemetry to Application Insights
-   * Any errors occurring for individual put request objects will be reported in the response.
-   * @param data
-   *          a {@link TimelineEntities} object.
-   * @return a {@link TimelinePutResponse} object.
-   * @throws IOException
-   */
+     * This method is Main of My Project , this IntermediateHistoryStore class
+     * extends TimelineStore of yarn and Override all function To pass the
+     * information of each job to Timeline Storage original And This project
+     * takes the Intermediate information and pulls out What is important and
+     * sends the information as Telemetry to Application Insights Any errors
+     * occurring for individual put request objects will be reported in the
+     * response.
+     *
+     * @param data a {@link TimelineEntities} object.
+     * @return a {@link TimelinePutResponse} object.
+     * @throws IOException
+     */
     @Override
     public TimelinePutResponse put(TimelineEntities data) throws IOException {
 
@@ -1554,12 +1555,12 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (IOException e) {
 
-            String message = PATTERN_LOG_ERROR+"Creating a problem while send TimelineEntity ";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while send TimelineEntity ";
             LOG.error(message, e);
 
         } catch (Exception ex) {
 
-            String message =PATTERN_LOG_ERROR+"Creating a problem while send TimelineEntity ";
+            String message = PATTERN_LOG_ERROR + "Creating a problem while send TimelineEntity ";
             LOG.error(message, ex);
         }
 
@@ -1567,14 +1568,13 @@ public class IntermediateHistoryStore extends AbstractService
     }
 
     /**
-   * Store domain information to the Timeline store. If A domain of the
-   * same ID already exists in the Timeline store, it will be COMPLETELY updated
-   * with the given domain.
-   * 
-   * @param domain
-   *          a {@link TimelineDomain} object
-   * @throws IOException
-   */
+     * Store domain information to the Timeline store. If A domain of the same
+     * ID already exists in the Timeline store, it will be COMPLETELY updated
+     * with the given domain.
+     *
+     * @param domain a {@link TimelineDomain} object
+     * @throws IOException
+     */
     @Override
     public void put(TimelineDomain domain) throws IOException {
 
@@ -1584,7 +1584,7 @@ public class IntermediateHistoryStore extends AbstractService
             }
         } catch (IOException iOException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Creating a problem reading the function put(TimelineDomain td) :", iOException);
+            LOG.error(PATTERN_LOG_ERROR + "Creating a problem reading the function put(TimelineDomain td) :", iOException);
 
             iOException.printStackTrace();
         }
@@ -1602,28 +1602,28 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (NoSuchMethodException noSuchMethodException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"no Such Method Exception :", noSuchMethodException);
+            LOG.error(PATTERN_LOG_ERROR + "no Such Method Exception :", noSuchMethodException);
             noSuchMethodException.printStackTrace();
 
         } catch (SecurityException securityException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Security Exception :", securityException);
+            LOG.error(PATTERN_LOG_ERROR + "Security Exception :", securityException);
             securityException.printStackTrace();
 
         } catch (IllegalAccessException illegalAccessException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Illegal Access Exception :", illegalAccessException);
+            LOG.error(PATTERN_LOG_ERROR + "Illegal Access Exception :", illegalAccessException);
             illegalAccessException.printStackTrace();
 
         } catch (IllegalArgumentException illegalArgumentException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Illegal Argument Exception :", illegalArgumentException);
+            LOG.error(PATTERN_LOG_ERROR + "Illegal Argument Exception :", illegalArgumentException);
             illegalArgumentException.printStackTrace();
 
         } catch (InvocationTargetException invocationTargetException) {
 
             Throwable cause = invocationTargetException.getCause();
-            LOG.error(PATTERN_LOG_ERROR+"Invocation Target Exception failed because of:" + cause.getMessage(), invocationTargetException);
+            LOG.error(PATTERN_LOG_ERROR + "Invocation Target Exception failed because of:" + cause.getMessage(), invocationTargetException);
             invocationTargetException.printStackTrace();
 
         }
@@ -1640,24 +1640,24 @@ public class IntermediateHistoryStore extends AbstractService
 
         } catch (NoSuchMethodException noSuchMethodException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"no Such Method Exception :", noSuchMethodException);
+            LOG.error(PATTERN_LOG_ERROR + "no Such Method Exception :", noSuchMethodException);
 
         } catch (SecurityException securityException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Security Exception :", securityException);
+            LOG.error(PATTERN_LOG_ERROR + "Security Exception :", securityException);
 
         } catch (IllegalAccessException illegalAccessException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Illegal Access Exception :", illegalAccessException);
+            LOG.error(PATTERN_LOG_ERROR + "Illegal Access Exception :", illegalAccessException);
 
         } catch (IllegalArgumentException illegalArgumentException) {
 
-            LOG.error(PATTERN_LOG_ERROR+"Illegal Argument Exception :", illegalArgumentException);
+            LOG.error(PATTERN_LOG_ERROR + "Illegal Argument Exception :", illegalArgumentException);
 
         } catch (InvocationTargetException invocationTargetException) {
 
             Throwable cause = invocationTargetException.getCause();
-            LOG.error(PATTERN_LOG_ERROR+"Invocation Target Exception failed because of:" + cause.getMessage(), invocationTargetException);
+            LOG.error(PATTERN_LOG_ERROR + "Invocation Target Exception failed because of:" + cause.getMessage(), invocationTargetException);
 
         }
     }
