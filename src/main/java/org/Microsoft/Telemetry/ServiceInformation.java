@@ -81,7 +81,7 @@ public class ServiceInformation {
     //Constructor overload
     public ServiceInformation() throws YarnException, IOException {
 
-        initialization(config);
+        //initialization(config);
     }
 
     /**

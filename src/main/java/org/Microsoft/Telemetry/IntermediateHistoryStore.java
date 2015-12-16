@@ -19,19 +19,10 @@
  */
 package org.Microsoft.Telemetry;
 
-import com.microsoft.applicationinsights.TelemetryClient;
-import com.microsoft.applicationinsights.TelemetryConfiguration;
-import com.microsoft.applicationinsights.telemetry.EventTelemetry;
-import com.microsoft.applicationinsights.telemetry.ExceptionTelemetry;
-import com.microsoft.applicationinsights.telemetry.SeverityLevel;
-import com.microsoft.applicationinsights.telemetry.TraceTelemetry;
 import org.apache.hadoop.service.AbstractService;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import org.apache.hadoop.conf.Configuration;
@@ -40,7 +31,6 @@ import org.apache.hadoop.yarn.api.records.timeline.TimelineDomain;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineDomains;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineEntities;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineEntity;
-import org.apache.hadoop.yarn.api.records.timeline.TimelineEvent;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineEvents;
 import org.apache.hadoop.yarn.api.records.timeline.TimelinePutResponse;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
@@ -48,36 +38,13 @@ import org.apache.hadoop.yarn.server.timeline.LeveldbTimelineStore;
 import org.apache.hadoop.yarn.server.timeline.NameValuePair;
 import org.apache.hadoop.yarn.server.timeline.TimelineStore;
 import java.lang.reflect.*;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import org.apache.hadoop.yarn.api.records.ApplicationId;
-import org.apache.hadoop.yarn.api.records.ApplicationReport;
-import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.server.timeline.TimelineDataManager;
 import org.apache.hadoop.yarn.server.timeline.TimelineReader;
-import org.apache.hadoop.yarn.util.ConverterUtils;
 
 import org.slf4j.LoggerFactory;
 
@@ -93,8 +60,7 @@ public class IntermediateHistoryStore extends AbstractService
     private ServiceInformation serviceInformation = null;
 
     private static final Log LOG = LogFactory.getLog(IntermediateHistoryStore.class);
-    private static final org.slf4j.Logger LOG2 = LoggerFactory.getLogger(IntermediateHistoryStore.class);  
-    
+    private static final org.slf4j.Logger LOG2 = LoggerFactory.getLogger(IntermediateHistoryStore.class);     
     private String PATTERN_LOG_INFO = " [ Telemetry LI ] ";
     private String PATTERN_LOG_ERROR = " [ Telemetry LE ] ";
   
