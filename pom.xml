@@ -29,8 +29,8 @@
                                 </goals>
                                 <configuration>                  
                                     <file>src/main/java/org/Microsoft/Telemetry/IntermediateHistoryStore.java</file>                   
-                                    <!--<outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>-->
-                                    <outputFile>target/IntermediateHistoryStore.java</outputFile>                                  
+                                    <outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>
+                                   <!-- <outputFile>target/IntermediateHistoryStore.java</outputFile>-->                                  
                                     <replacements>
                                         <replacement>                           
                                             <token>, TimelineDataManager.CheckAcl ca</token>
@@ -82,8 +82,8 @@
                                 </goals>
                                 <configuration>                  
                                     <file>src/main/java/org/Microsoft/Telemetry/IntermediateHistoryStore.java</file>                   
-                                    <!--<outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>-->
-                                    <outputFile>target/IntermediateHistoryStore.java</outputFile>
+                                    <outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>
+                                   <!-- <outputFile>target/IntermediateHistoryStore.java</outputFile>-->
                                     <replacements>
                                         <replacement>                           
                                             <token>package org.Microsoft.Telemetry;</token>
@@ -237,7 +237,12 @@
                 <configuration>                                                   
                     <excludes>
                         <exclude>**/org/Microsoft/Telemetry/IntermediateHistoryStore.java</exclude>
-                    </excludes>                           
+                    </excludes> 
+                    
+                   <!-- <includes>
+                        <include>target/IntermediateHistoryStore.java</include>
+                    </includes>-->
+                          
                 </configuration>                  
             </plugin>
                        
