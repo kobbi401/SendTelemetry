@@ -10,52 +10,13 @@
         <profile>
             <id>hadoop-2.6</id>
             <properties>                               
-                <hadoop.version>2.6.0</hadoop.version>              			
-            </properties>
-	
-            <build> 
-                <plugins>
-                    	
-                    <plugin>
-                        <groupId>com.google.code.maven-replacer-plugin</groupId>
-                        <artifactId>replacer</artifactId>
-                        <version>1.5.3</version>
-                        <executions>
-                            <execution>
-                                <id>replac-IntermediateHistoryStore.java</id>                                   
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>replace</goal>
-                                </goals>
-                                <configuration>                  
-                                    <file>src/main/java/org/Microsoft/Telemetry/IntermediateHistoryStore.java</file>                   
-                                    <outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>
-                                   <!-- <outputFile>target/IntermediateHistoryStore.java</outputFile>-->                                  
-                                    <replacements>
-                                        <replacement>                           
-                                            <token>, TimelineDataManager.CheckAcl ca</token>
-                                            <value></value>
-                                        </replacement>
-                                        <replacement>                           
-                                            <token>, ca</token>
-                                            <value></value>
-                                        </replacement>
-                                        <replacement>                           
-                                            <token>package org.Microsoft.Telemetry;</token>
-                                            <value>package org.Microsoft; 
-                                                import org.Microsoft.Telemetry.ServiceInformation;
-                                            </value>
-                                        </replacement>
-                                    </replacements>
-                                </configuration>
-                            </execution>                           
-                        </executions>
+                <hadoop.version>2.6.0</hadoop.version>
+                <token1.to.replace>, TimelineDataManager.CheckAcl ca</token1.to.replace> 
+                <value1.to.replace></value1.to.replace> 
                 
-                    </plugin>           
-                                       
-                </plugins>
-            </build>
-		
+                <token2.to.replace>, ca</token2.to.replace> 
+                <value2.to.replace></value2.to.replace>            			
+            </properties>	
         </profile>
 
         <profile>
@@ -64,42 +25,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <hadoop.version>2.7.1.2.3.0.0-2557</hadoop.version>	
+                <hadoop.version>2.7.1.2.3.0.0-2557</hadoop.version>               
+                <token1.to.replace>, TimelineDataManager.CheckAcl ca</token1.to.replace> 
+                <value1.to.replace>, TimelineDataManager.CheckAcl ca</value1.to.replace> 
+                
+                <token2.to.replace>, ca</token2.to.replace> 
+                <value2.to.replace>, ca</value2.to.replace>  	
             </properties>  
-            
-            <build> 
-                <plugins>                  	
-                    <plugin>
-                        <groupId>com.google.code.maven-replacer-plugin</groupId>
-                        <artifactId>replacer</artifactId>
-                        <version>1.5.3</version>
-                        <executions>
-                            <execution>
-                                <id>replac-IntermediateHistoryStore.java</id>                                   
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>replace</goal>
-                                </goals>
-                                <configuration>                  
-                                    <file>src/main/java/org/Microsoft/Telemetry/IntermediateHistoryStore.java</file>                   
-                                    <outputFile>src/main/java/org/Microsoft/IntermediateHistoryStore.java</outputFile>
-                                   <!-- <outputFile>target/IntermediateHistoryStore.java</outputFile>-->
-                                    <replacements>
-                                        <replacement>                           
-                                            <token>package org.Microsoft.Telemetry;</token>
-                                            <value>package org.Microsoft; 
-                                                import org.Microsoft.Telemetry.ServiceInformation;
-                                            </value>
-                                        </replacement>
-                                    </replacements>
-                                </configuration>
-                            </execution>                           
-                        </executions>               
-                    </plugin>           				                   
-                </plugins>
-            </build>
-		
-                              
+                        		                            
         </profile>
     </profiles>
 	
@@ -203,7 +136,38 @@
                 </executions>
             </plugin>-->
             
-            		
+            	
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <id>replac-IntermediateHistoryStore.java</id>                                   
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>                  
+                            <file>src/main/java/org/Microsoft/Telemetry/IntermediateHistoryStore.java</file>                                                      
+                            <outputFile>target/src/IntermediateHistoryStore.java</outputFile>                                
+                            <replacements>
+                                <replacement>                           
+                                    <token>${token1.to.replace}</token>
+                                    <value>${value1.to.replace}</value>
+                                </replacement>
+                                <replacement>                           
+                                    <token>${token2.to.replace}</token>
+                                    <value>${value2.to.replace}</value>
+                                </replacement>                                       
+                            </replacements>
+                        </configuration>
+                    </execution>                           
+                </executions>
+                
+            </plugin>         
+                                
+                                        	
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4.1</version>
@@ -229,7 +193,31 @@
                     </execution>
                 </executions>
             </plugin> 
+                
                       
+                            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target\src</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+         
+                                        
+                                                    
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -239,7 +227,7 @@
                         <exclude>**/org/Microsoft/Telemetry/IntermediateHistoryStore.java</exclude>
                     </excludes> 
                     
-                   <!-- <includes>
+                    <!-- <includes>
                         <include>target/IntermediateHistoryStore.java</include>
                     </includes>-->
                           
